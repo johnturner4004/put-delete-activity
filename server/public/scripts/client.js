@@ -1,3 +1,5 @@
+// const { delete } = require("../../routes/book.router");
+
 $(document).ready(function(){
   console.log('jQuery sourced.');
   refreshBooks();
@@ -6,7 +8,7 @@ $(document).ready(function(){
 
 function addClickHandlers() {
   $('#submitBtn').on('click', handleSubmit);
-
+  $('#bookShelf').on('click', '.deleteBtn', handleDelete);
   // TODO - Add code for edit & delete buttons
 }
 
@@ -54,12 +56,36 @@ function renderBooks(books) {
   for(let i = 0; i < books.length; i += 1) {
     let book = books[i];
     // For each book, append a new row to our table
-    $('#bookShelf').append(`
+    let newRow = $(`
       <tr>
         <td>${book.title}</td>
         <td>${book.author}</td>
-        <td><button class="read">Mark as read</button><button class="delete">Delete</button></td>
+        <td><button class="readBtn" data-id=${book.id}>Mark as read</button><button class="deleteBtn" data-id=${book.id}>Delete</button></td>
       </tr>
     `);
+    newRow.data = ('id', book.id);
+    $('#bookShelf').append(newRow);
   }
+}
+
+function handleDelete() {
+  // deleteBook($(this).data('id'));
+  let id = $(this).data('id')
+  console.log(id);
+  deleteBook(id);
+}
+
+function deleteBook(bookId) {  
+  $.ajax({
+    method: 'DELETE',
+    url: `/books/${bookId}`,
+  })
+  .then(response => {
+    console.log('Delete sent for book id:', bookId);
+    refreshBooks();    
+  })
+  .catch(error => {
+    console.log('Ya I don\'t feel like deleteing that', error);
+    alert('Nope not gonna delete that');
+  });
 }
