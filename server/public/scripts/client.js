@@ -18,6 +18,8 @@ function handleSubmit() {
   let book = {};
   book.author = $('#author').val();
   book.title = $('#title').val();
+  $('#author').val('');
+  $('#title').val('');
   addBook(book);
 }
 
@@ -73,8 +75,22 @@ function renderBooks(books) {
 function handleRead() {
   let id = $(this).data('id');
   console.log(id);
-  
-  
+  readBook(id);
+}
+
+function readBook(bookId) {
+  $.ajax({
+    method: 'PUT',
+    url: `/books/${bookId}`,
+  })
+  .then(response => {
+    console.log('I changed this to read/unread', response);
+    refreshBooks();
+  })
+  .catch(error => {
+    console.log('When did it become my job to keep track of what you read', error);
+    alert(`Nope not gonna mark that as read.`);
+  })
 }
 
 function handleDelete() {
@@ -94,7 +110,7 @@ function deleteBook(bookId) {
     refreshBooks();    
   })
   .catch(error => {
-    console.log('Ya I don\'t feel like deleteing that', error);
+    console.log('Ya I don\'t feel like deleting that', error);
     alert('Nope not gonna delete that');
   });
 }
